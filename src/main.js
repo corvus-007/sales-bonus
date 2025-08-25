@@ -87,7 +87,7 @@ function analyzeSalesData(data, options) {
 
     const sellerStats = data.sellers.map((seller) => {
         return {
-            seller_id: seller.id,
+            id: seller.id,
             name: `${seller.first_name} ${seller.last_name}`,
             revenue: 0,
             profit: 0,
@@ -101,7 +101,7 @@ function analyzeSalesData(data, options) {
     const sellerIndex = sellerStats.reduce((acc, seller) => {
         return {
             ...acc,
-            [seller.seller_id]: seller,
+            [seller.id]: seller,
         };
     }, {});
 
@@ -157,9 +157,7 @@ function analyzeSalesData(data, options) {
     // @TODO: Назначение премий на основе ранжирования
 
     sellerStats.forEach((seller, index) => {
-        console.log(seller);
         seller.bonus = calculateBonus(index, sellerStats.length, seller);
-        console.log(productIndex);
         seller.top_products = Object.entries(seller.products_sold).
             map(([sku, quantity]) => {
                 return {
@@ -176,13 +174,24 @@ function analyzeSalesData(data, options) {
     // @TODO: Подготовка итоговой коллекции с нужными полями
 
     return sellerStats.map((seller) => {
-        delete seller.products_sold;
+        const {
+            id,
+            name,
+            revenue,
+            profit,
+            sales_count,
+            top_products,
+            bonus,
+        } = seller;
 
         return {
-            ...seller,
-            revenue: +seller.revenue.toFixed(2),
-            profit: +seller.profit.toFixed(2),
-            bonus: +seller.bonus.toFixed(2),
+            seller_id: id,
+            name,
+            revenue: +revenue.toFixed(2),
+            profit: +profit.toFixed(2),
+            sales_count,
+            top_products,
+            bonus: +bonus.toFixed(2),
         };
     });
 }
